@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#101010">
+<title>IRON LIFE</title>
+<style>
+:root{--bg:#101010;--panel:#1b1b1b;--line:#333;--orange:#ff7a18;--muted:#aaa}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:#f5f5f5;font:16px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+header{padding:26px 18px 14px;background:#151515;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:2}
+h1{margin:0;font-size:26px;letter-spacing:2px}h1 span{color:var(--orange)}.sub{color:var(--muted);font-size:12px;margin-top:5px}
+nav{display:flex;gap:8px;overflow:auto;padding:12px 14px;background:#151515;position:sticky;top:77px;z-index:2}
+nav button{white-space:nowrap;border:1px solid var(--line);background:#222;color:#ddd;border-radius:20px;padding:9px 13px}
+nav button.active{background:var(--orange);border-color:var(--orange);color:#111;font-weight:700}
+main{padding:14px;max-width:760px;margin:auto}.panel{background:var(--panel);border:1px solid var(--line);border-radius:15px;padding:16px;margin-bottom:13px}
+h2{font-size:18px;margin:0 0 13px}.stats{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.stat{background:#242424;border-radius:12px;padding:13px}.stat b{display:block;font-size:22px;color:var(--orange)}.stat small{color:var(--muted)}
+label{display:block;color:#bbb;font-size:13px;margin:10px 0 5px}input{width:100%;padding:12px;border-radius:9px;border:1px solid #444;background:#111;color:white;font-size:16px}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:9px}.btn{background:var(--orange);border:0;border-radius:10px;padding:12px 15px;font-weight:700;color:#111;margin-top:12px;width:100%;font-size:15px}
+.item{border-top:1px solid var(--line);padding:10px 0;display:flex;justify-content:space-between;gap:10px}.item small{color:var(--muted)}.del{background:transparent;border:0;color:#ff8b5c;font-size:18px}
+.muted{color:var(--muted);font-size:13px}.hidden{display:none}
+</style>
+</head>
+<body>
+<header><h1>IRON <span>LIFE</span></h1><div class="sub">ТВОЯ СИСТЕМА ПРОГРЕССА</div></header>
+<nav>
+<button class="active" data-tab="home">Главная</button><button data-tab="food">Питание</button><button data-tab="workout">Тренировки</button><button data-tab="weight">Вес</button><button data-tab="profile">Профиль</button>
+</nav>
+<main>
+<section id="home">
+<div class="panel"><h2>Сегодняшний прогресс</h2><div class="stats">
+<div class="stat"><b id="kcalNow">0</b><small>ккал съедено</small></div><div class="stat"><b id="proteinNow">0 г</b><small>белок</small></div>
+<div class="stat"><b id="fatNow">0 г</b><small>жиры</small></div><div class="stat"><b id="carbNow">0 г</b><small>углеводы</small></div></div></div>
+<div class="panel"><h2>Цели на день</h2><div id="goals"></div><p class="muted">Ориентир для набора массы. Корректируй цели в профиле по динамике веса.</p></div>
+<div class="panel"><h2>Быстрый старт</h2><button class="btn" onclick="tab('food')">＋ Добавить еду</button><button class="btn" onclick="tab('workout')">＋ Записать тренировку</button></div>
+</section>
+<section id="food" class="hidden"><div class="panel"><h2>Дневник питания</h2>
+<label>Название продукта / блюда</label><input id="foodName" placeholder="Например, курица с рисом">
+<div class="row"><div><label>Ккал</label><input id="foodK" type="number" min="0" inputmode="decimal"></div><div><label>Белки, г</label><input id="foodP" type="number" min="0" inputmode="decimal"></div><div><label>Жиры, г</label><input id="foodF" type="number" min="0" inputmode="decimal"></div><div><label>Углеводы, г</label><input id="foodC" type="number" min="0" inputmode="decimal"></div></div>
+<button class="btn" onclick="addFood()">Добавить в дневник</button></div><div class="panel"><h2>Записи за сегодня</h2><div id="foodList"></div></div></section>
+<section id="workout" class="hidden"><div class="panel"><h2>Журнал тренировок</h2><label>Упражнение</label><input id="exName" placeholder="Например, жим гантелей лёжа"><div class="row"><div><label>Подходы</label><input id="exSets" type="number" value="3" inputmode="numeric"></div><div><label>Повторения</label><input id="exReps" type="number" value="10" inputmode="numeric"></div><div><label>Вес, кг</label><input id="exWeight" type="number" step="0.5" inputmode="decimal"></div></div><button class="btn" onclick="addWorkout()">Сохранить упражнение</button></div><div class="panel"><h2>История</h2><div id="workoutList"></div></div></section>
+<section id="weight" class="hidden"><div class="panel"><h2>Контроль веса</h2><label>Текущий вес, кг</label><input id="weightInput" type="number" step="0.1" inputmode="decimal"><button class="btn" onclick="addWeight()">Сохранить вес</button></div><div class="panel"><h2>История веса</h2><div id="weightList"></div></div></section>
+<section id="profile" class="hidden"><div class="panel"><h2>Профиль и цели</h2><div class="row"><div><label>Возраст</label><input id="age" type="number" value="30"></div><div><label>Рост, см</label><input id="height" type="number" value="185"></div><div><label>Вес, кг</label><input id="bodyWeight" type="number" value="95"></div><div><label>Калории, ккал</label><input id="goalK" type="number" value="3200"></div><div><label>Белки, г</label><input id="goalP" type="number" value="190"></div><div><label>Жиры, г</label><input id="goalF" type="number" value="90"></div><div><label>Углеводы, г</label><input id="goalC" type="number" value="408"></div></div><button class="btn" onclick="saveProfile()">Сохранить цели</button><button class="btn" onclick="exportData()">Экспортировать резервную копию</button><p class="muted">Данные сохраняются в памяти браузера на этом устройстве. Периодически делай экспорт резервной копии.</p></div></section>
+</main>
+<script>
+const today=()=>new Date().toISOString().slice(0,10);
+let data={food:[],workouts:[],weights:[],profile:{age:30,height:185,bodyWeight:95,goalK:3200,goalP:190,goalF:90,goalC:408}};
+try{data={...data,...JSON.parse(localStorage.getItem('ironLifeData')||'{}')};}catch(e){}
+function save(){localStorage.setItem('ironLifeData',JSON.stringify(data));render()}
+function tab(id){document.querySelectorAll('main section').forEach(s=>s.classList.toggle('hidden',s.id!==id));document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('active',b.dataset.tab===id))}
+document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>tab(b.dataset.tab));
+function num(id){return Number(document.getElementById(id).value)||0}
+function addFood(){let name=document.getElementById('foodName').value.trim();if(!name)return alert('Введи название блюда');data.food.push({id:Date.now(),date:today(),name,k:num('foodK'),p:num('foodP'),f:num('foodF'),c:num('foodC')});['foodName','foodK','foodP','foodF','foodC'].forEach(id=>document.getElementById(id).value='');save()}
+function addWorkout(){let name=document.getElementById('exName').value.trim();if(!name)return alert('Введи название упражнения');data.workouts.push({id:Date.now(),date:today(),name,sets:num('exSets'),reps:num('exReps'),weight:num('exWeight')});document.getElementById('exName').value='';save()}
+function addWeight(){let w=num('weightInput');if(!w)return alert('Введи вес');data.weights.push({id:Date.now(),date:today(),w});save()}
+function saveProfile(){['age','height','bodyWeight','goalK','goalP','goalF','goalC'].forEach(k=>data.profile[k]=num(k));save();alert('Цели сохранены')}
+function removeItem(type,id){data[type]=data[type].filter(x=>x.id!==id);save()}
+function exportData(){let a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json'}));a.download='iron-life-backup.json';a.click();URL.revokeObjectURL(a.href)}
+function render(){let f=data.food.filter(x=>x.date===today());let sum=k=>f.reduce((a,x)=>a+x[k],0);kcalNow.textContent=sum('k');proteinNow.textContent=sum('p')+' г';fatNow.textContent=sum('f')+' г';carbNow.textContent=sum('c')+' г';let p=data.profile;goals.innerHTML=`Калории: <b>${sum('k')} / ${p.goalK}</b><br>Белки: <b>${sum('p')} / ${p.goalP} г</b><br>Жиры: <b>${sum('f')} / ${p.goalF} г</b><br>Углеводы: <b>${sum('c')} / ${p.goalC} г</b>`;
+foodList.innerHTML=data.food.slice().reverse().map(x=>`<div class="item"><div><b>${esc(x.name)}</b><br><small>${x.date} · ${x.k} ккал · Б ${x.p} / Ж ${x.f} / У ${x.c}</small></div><button class="del" onclick="removeItem('food',${x.id})">×</button></div>`).join('')||'<p class="muted">Пока записей нет.</p>';
+workoutList.innerHTML=data.workouts.slice().reverse().map(x=>`<div class="item"><div><b>${esc(x.name)}</b><br><small>${x.date} · ${x.sets} × ${x.reps} · ${x.weight} кг</small></div><button class="del" onclick="removeItem('workouts',${x.id})">×</button></div>`).join('')||'<p class="muted">Пока тренировок нет.</p>';
+weightList.innerHTML=data.weights.slice().reverse().map(x=>`<div class="item"><div><b>${x.w} кг</b><br><small>${x.date}</small></div><button class="del" onclick="removeItem('weights',${x.id})">×</button></div>`).join('')||'<p class="muted">Пока измерений нет.</p>';
+['age','height','bodyWeight','goalK','goalP','goalF','goalC'].forEach(k=>{let el=document.getElementById(k);if(el&&document.activeElement!==el)el.value=p[k]});
+}
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+render();
+</script>
+</body></html>
